@@ -33,6 +33,10 @@ sub NORMALIZE_ENCODING(Str:D $s) {
         'l1'                => 'iso-8859-1',
         'ibm819'            => 'iso-8859-1',
         'cp819'             => 'iso-8859-1',
+        # according to http://de.wikipedia.org/wiki/ISO-8859-1
+        'iso_8859-2'        => 'iso-8859-2',
+        'latin2'            => 'iso-8859-2',
+        'latin-2'           => 'iso-8859-2',
     );
     %map{$s} // %map{lc $s} // lc $s;
 }
