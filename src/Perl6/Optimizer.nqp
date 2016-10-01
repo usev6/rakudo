@@ -1435,7 +1435,7 @@ class Perl6::Optimizer {
                         my $want;
                         if !nqp::isconcrete($ret_value) {
 # can we create a Want with a type object???  XXX
-                        } elsif nqp::istype($ret_value, $!symbols.find_in_setting("Int")) && !nqp::isbig_I(nqp::decont($ret_value)) {
+                        } elsif nqp::istype($ret_value, $!symbols.find_in_setting("Int")) && !nqp::istype($ret_value, $!symbols.find_in_setting("Bool")) && !nqp::isbig_I(nqp::decont($ret_value)) {
                             $want := QAST::Want.new($wval,
                                 "Ii", QAST::IVal.new(:value(nqp::unbox_i($ret_value))));
                         } elsif nqp::istype($ret_value, $!symbols.find_in_setting("Num")) {
