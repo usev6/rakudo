@@ -164,10 +164,9 @@ my class IO::Handle does IO {
             has int $!size;
             has int $!close;
 
-            method !SET-SELF(\handle, \size, \close) {
+            method !SET-SELF(\handle, \size, $!close) {
                 $!handle := handle;
                 $!size    = size.Int;
-                $!close   = close;
                 self
             }
             method new(\handle, \size, \close) {
@@ -216,12 +215,11 @@ my class IO::Handle does IO {
             has int $!elems;
             has int $!done;
 
-            method !SET-SELF(\handle, \comber, \close) {
+            method !SET-SELF(\handle, \comber, $!close) {
                 $!handle := handle;
                 nqp::istype(comber,Regex)
                   ?? ($!regex := comber)
                   !! ($!comber = nqp::unbox_s(comber.Str));
-                $!close = close;
                 $!left  = '';
                 self!next-chunk until $!elems || $!done;
                 self
@@ -309,9 +307,8 @@ my class IO::Handle does IO {
             has int $index;
             has int $chars;
 
-            method !SET-SELF(\handle, \close, \COMB) {
+            method !SET-SELF(\handle, $!close, \COMB) {
                 $!handle := handle;
-                $!close   = close;
                 $!COMB    = ?COMB;
                 self!next-chunk();
                 $!first = $!last = 1 if $!chars && !$!COMB;
@@ -371,12 +368,11 @@ my class IO::Handle does IO {
             has int $!elems;
             has int $!done;
 
-            method !SET-SELF(\handle, \splitter, \close) {
+            method !SET-SELF(\handle, \splitter, $!close) {
                 $!handle := handle;
                 nqp::istype(splitter,Regex)
                   ?? ($!regex   := splitter)
                   !! ($!splitter = nqp::unbox_s(splitter.Str));
-                $!close = close;
                 $!left  = '';
                 self!next-chunk until $!elems || $!done;
                 self

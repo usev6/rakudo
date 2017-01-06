@@ -9,10 +9,9 @@ my class Range is Cool does Iterable does Positional {
     has int $!infinite;
     has int $!is-int;
 
-    method !SET-SELF( $!min, $!max, \excludes-min, \excludes-max, \infinite) {
+    method !SET-SELF( $!min, $!max, \excludes-min, \excludes-max, $!infinite) {
         $!excludes-min = excludes-min // 0;
         $!excludes-max = excludes-max // 0;
-        $!infinite = infinite;
         $!is-int   = nqp::istype($!min,Int) && nqp::istype($!max,Int);
         self
     }
@@ -122,7 +121,7 @@ my class Range is Cool does Iterable does Positional {
             class :: does Iterator {
                 has $!i;
 
-                method !SET-SELF(\i)  { $!i = i; self }
+                method !SET-SELF($!i)  { self }
                 method new(\i)    { nqp::create(self)!SET-SELF(i) }
                 method pull-one() { $!i++ }
                 method is-lazy()  { True  }
@@ -172,10 +171,8 @@ my class Range is Cool does Iterable does Positional {
                 has $!e;
                 has int $!exclude;
 
-                method !SET-SELF(\i,\exclude,\e) {
-                    $!i       = i;
+                method !SET-SELF($!i,\exclude,$!e) {
                     $!exclude = exclude.Int;
-                    $!e       = e;
                     self
                 }
                 method new(\i,\exclude,\e) {
@@ -224,7 +221,7 @@ my class Range is Cool does Iterable does Positional {
                 has int $!i;
                 has int $!n;
 
-                method !SET-SELF(\i,\n) { $!i = i + 1; $!n = n; self }
+                method !SET-SELF(\i,$!n) { $!i = i + 1; self }
                 method new(\i,\n)   { nqp::create(self)!SET-SELF(i,n) }
 
                 method pull-one() {
@@ -256,7 +253,7 @@ my class Range is Cool does Iterable does Positional {
             class :: does Iterator {
                 has $!i;
 
-                method !SET-SELF(\i)  { $!i = i; self }
+                method !SET-SELF($!i)  { self }
                 method new(\i)    { nqp::create(self)!SET-SELF(i) }
                 method pull-one() { $!i-- }
                 method is-lazy()  { True  }
@@ -306,10 +303,8 @@ my class Range is Cool does Iterable does Positional {
                 has $!e;
                 has int $!exclude;
 
-                method !SET-SELF(\i,\exclude,\e) {
-                    $!i       = i;
+                method !SET-SELF($!i,\exclude,$!e) {
                     $!exclude = exclude.Int;
-                    $!e       = e;
                     self
                 }
                 method new(\i,\exclude,\e) {
@@ -440,8 +435,7 @@ my class Range is Cool does Iterable does Positional {
               ?? Seq.new(class :: does Iterator {
                     has int $!min;
                     has Int $!elems;
-                    method !SET-SELF(\min,\elems) {
-                        $!min    = min;
+                    method !SET-SELF($!min,\elems) {
                         $!elems := nqp::decont(elems);
                         self
                     }
@@ -473,10 +467,8 @@ my class Range is Cool does Iterable does Positional {
                     has int $!min;
                     has Int $!elems;
                     has int $!todo;
-                    method !SET-SELF(\min,\elems,\todo) {
-                        $!min    = min;
+                    method !SET-SELF($!min,\elems,$!todo) {
                         $!elems := nqp::decont(elems);
-                        $!todo   = todo;
                         self
                     }
                     method new(\m,\e,\t) { nqp::create(self)!SET-SELF(m,e,t) }
@@ -508,10 +500,8 @@ my class Range is Cool does Iterable does Positional {
                     has Int $!elems;
                     has int $!todo;
                     has $!seen;
-                    method !SET-SELF(\min,\elems,\todo) {
-                        $!min    = min;
+                    method !SET-SELF($!min,\elems,$!todo) {
                         $!elems := nqp::decont(elems);
-                        $!todo   = todo;
                         $!seen  := nqp::hash();
                         self
                     }

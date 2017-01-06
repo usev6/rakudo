@@ -3,10 +3,8 @@ class Version {
     has int $!plus;
     has str $!string;
 
-    method !SET-SELF(\parts,\plus,\string) {
+    method !SET-SELF(\parts,$!plus,$!string) {
         $!parts := nqp::getattr(parts,List,'$!reified');
-        $!plus   = plus;
-        $!string = string;
         self
     }
 

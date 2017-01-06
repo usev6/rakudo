@@ -3,8 +3,7 @@ my class Junction { # declared in BOOTSTRAP
     #     has Mu $!storage;              # elements of Junction
     #     has str $!type;                # type of Junction
 
-    method !SET-SELF(\type,\values) {
-        $!type = type;
+    method !SET-SELF($!type,\values) {
         fail "Junction Can only have 'any', 'all', 'none', 'one' type"
           unless nqp::iseq_s($!type,"any")
               || nqp::iseq_s($!type,"all") 

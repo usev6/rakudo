@@ -474,10 +474,9 @@ my role Baggy does QuantHash {
             has int $!todo;
             has int $!keep;
 
-            method !SET-SELF($!total, \pairs, \keep, \todo) {
+            method !SET-SELF($!total, \pairs, \keep, $!todo) {
                 $!elems  = pairs.elems;  # reifies
                 $!pairs := nqp::getattr(pairs,List,'$!reified');
-                $!todo   = todo;
                 $!keep   = +?keep;
                 self
             }

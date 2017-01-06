@@ -629,8 +629,8 @@ my class Rakudo::Internals {
             has int $!offset;
             has &!out;
             has $!cache;
-            method !SET-SELF($!source,$!indexes,\offset,&!out) {
-                $!cache := nqp::setelems(nqp::list,$!offset = offset);
+            method !SET-SELF($!source,$!indexes,$!offset,&!out) {
+                $!cache := nqp::setelems(nqp::list,$!offset);
                 self
             }
             method new(\s,\i,\o,\out) { nqp::create(self)!SET-SELF(s,i,o,out) }
@@ -699,8 +699,7 @@ my class Rakudo::Internals {
             has $!indexes;    # iterator providing index values
             has int $!next;   # virtual index of next source value
             has &!out;        # callable for out of sequence values
-            method !SET-SELF($!source,$!indexes,\offset,&!out) {
-                $!next = offset;
+            method !SET-SELF($!source,$!indexes,$!next,&!out) {
                 self
             }
             method new(\s,\i,\o,\out) { nqp::create(self)!SET-SELF(s,i,o,out) }
@@ -786,10 +785,9 @@ my class Rakudo::Internals {
             has int $!i;
             has int $!last;
 
-            method !SET-SELF(int $i, int $last) {
+            method !SET-SELF(int $i, $!last) {
                 nqp::stmts(
                   ($!i    = nqp::sub_i($i,1)),
-                  ($!last = $last),
                   self
                 )
             }
@@ -2352,8 +2350,7 @@ my class Rakudo::Internals {
             has str $!dir-sep;
             has $!todo;
             has $!seen;
-            method !SET-SELF(\abspath,$!dir,$!file) {
-                $!abspath = abspath;
+            method !SET-SELF($!abspath,$!dir,$!file) {
                 if nqp::stat($!abspath,nqp::const::STAT_EXISTS)
                   && nqp::stat($!abspath,nqp::const::STAT_ISDIR) {
                     $!handle := nqp::opendir($!abspath);

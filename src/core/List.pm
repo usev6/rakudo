@@ -21,9 +21,7 @@ my sub combinations(Int() $n, Int() $k) {
         has int $!k;
         has Mu $!stack;
         has Mu $!combination;
-        method !SET-SELF(\n,\k) {
-            $!n = n;
-            $!k = k;
+        method !SET-SELF($!n,$!k) {
             $!stack       := nqp::list_i(0);
             $!combination := nqp::list;
             self
@@ -75,8 +73,7 @@ sub permutations(Int() $n) {
         has int $!n;
         has int $!todo;
         has $!next;
-        method !SET-SELF(int $n) {
-            $!n     = $n;  # cannot set native int in sig yet
+        method !SET-SELF($!n) {
             $!todo  = self.count-only;
             $!next := nqp::setelems(nqp::list,$n);
             nqp::bindpos($!next,$_,$_) for ^$n;
@@ -1073,10 +1070,9 @@ my class List does Iterable does Positional { # declared in BOOTSTRAP
                      has $!list;
                      has Int $!elems;
                      has int $!todo;
-                     method !SET-SELF(\list,\todo) {
+                     method !SET-SELF(\list,$!todo) {
                          $!list := nqp::getattr(list,List,'$!reified');
                          $!elems = nqp::elems($!list);
-                         $!todo  = todo;
                          self
                      }
                      method new(\list,\todo) {

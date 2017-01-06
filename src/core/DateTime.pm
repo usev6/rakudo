@@ -47,12 +47,8 @@ my class DateTime does Dateish {
     }
 
     method !SET-SELF(
-      $!year,$!month,$!day,$hour,$minute,$!second,$timezone,&!formatter
+      $!year,$!month,$!day,$!hour,$!minute,$!second,$!timezone,&!formatter
     ) {
-        # can't assign native in attributes inside signature yet
-        $!hour     = $hour,
-        $!minute   = $minute,
-        $!timezone = $timezone;
         self
     }
     method !new-from-positional(DateTime:

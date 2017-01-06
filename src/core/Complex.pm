@@ -3,9 +3,7 @@ my class Complex is Cool does Numeric {
     has num $.re;
     has num $.im;
 
-    method !SET-SELF(Num() \re, Num() \im) {
-        $!re = re;
-        $!im = im;
+    method !SET-SELF(Num() $!re, Num() $!im) {
         self
     }
     proto method new(|) { * }

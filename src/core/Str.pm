@@ -1587,10 +1587,9 @@ my class Str does Stringy { # declared in BOOTSTRAP
                 has int $!pos;
                 has int $!first;
                 has int $!last;
-                method !SET-SELF(\string, \todo, \skip-empty) {
+                method !SET-SELF(\string, $!todo, \skip-empty) {
                     $!string = nqp::unbox_s(string);
                     $!chars  = nqp::chars($!string);
-                    $!todo   = todo;
                     $!first  = !skip-empty;
 
                     if $!todo > $!chars + 2 {  # will return all chars
