@@ -276,7 +276,27 @@ our role Native[Routine $r, $libname where Str|Callable|List|IO::Path|Distributi
     method !setup() {
         $setup-lock.protect: {
             nqp::neverrepossess(self);
-            return if nqp::unbox_i($!call);
+            ## Original code leads to NullPointerException on JVM backend.
+            ## This seems to be a problem with an extra block. Even the following addition
+            ## to NQP's src/vm/jvm/runtime/org/raku/nqp/sixmodel/reprs/NativeCallInstance.java
+            ## doesn't help:
+            ##
+            ##   import org.raku.nqp.runtime.ThreadContext;
+            ##
+            ##   public class NativeCallInstance extends SixModelObject {
+            ##
+            ##       public long get_int(ThreadContext tc) {
+            ##           return 0;
+            ##       }
+            ##
+            ##   }
+            ##
+            ## But it helps with this oneliner:
+            ##
+            ##   $ ./rakudo-j 'use nqp; use NativeCall; my class native_callsite is repr("NativeCall") { }; my $bar = native_callsite.new; say nqp::unbox_i($bar)'
+            ##   0
+            ##
+            return if $*VM ne 'jvm' && nqp::unbox_i($!call);
 
             # Make sure that C++ methods are treated as mangled (unless set otherwise)
             if self.package.REPR eq 'CPPStruct' and not self.does(NativeCallMangled) {
@@ -311,7 +331,7 @@ our role Native[Routine $r, $libname where Str|Callable|List|IO::Path|Distributi
                     )
                     !! return_hash_for($r.signature, $r, :$!entry-point));
 
-            my $body := $jitted ?? $!jit-optimized-body !! $!optimized-body;
+            my $body := $jitted && $*VM ne "jvm" ?? $!jit-optimized-body !! $!optimized-body;
             if $body {
                 nqp::bindattr(
                     self,
@@ -538,7 +558,7 @@ our role Native[Routine $r, $libname where Str|Callable|List|IO::Path|Distributi
                 nqp::markcodestatic($stub);
                 nqp::markcodestub($stub);
                 nqp::bindattr(self, $?CLASS, '$!optimized-body', $stub);
-                my $jit-optimized-body := self!create-jit-compiled-function-body($r);
+                my $jit-optimized-body := $*VM eq 'jvm' ?? self!create-function-body($r) !! self!create-jit-compiled-function-body($r);
                 $jit-optimized-body.annotate('code_object', self);
                 $jit-optimized-body.code_object(self);
                 nqp::bindattr(self, $?CLASS, '$!jit-optimized-body', $stub);
@@ -587,10 +607,13 @@ our role Native[Routine $r, $libname where Str|Callable|List|IO::Path|Distributi
                 $!optimized-body # Already have the optimized body
                 or $!any-optionals # the compiled code doesn't support optional parameters yet
                 or try $*W;    # Avoid issues with compiling specialized version during BEGIN time
-            self!setup() unless nqp::unbox_i($!call);
+            self!setup() unless $*VM ne 'jvm' && nqp::unbox_i($!call);
+
+            warn "DEBUG_1000 This should not happen: args is null" if $*VM eq 'jvm' && nqp::isnull(args);
 
             my Mu $args := nqp::getattr(nqp::decont(args), Capture, '@!list');
             self!arity-error(args) if nqp::elems($args) != $!arity;
+
 
             nqp::nativecall($!rettype, self, $args)
         };
